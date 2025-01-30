@@ -5,7 +5,7 @@ edition = "2021"
 
 [dependencies]
 clap = "3.2"
-rust-htslib = "0.40"
+rust-htslib = "0.38"
 anyhow = "1.0"
 tempfile = "3.2"
 thiserror = "1.0"
