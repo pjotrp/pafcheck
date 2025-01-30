@@ -4,14 +4,14 @@
 ;;
 ;; To get a development container using a recent guix (see `guix pull`)
 ;;
-;;   guix shell -C -D -F -f guix.scm         # default build
-;;   guix shell -C -N -D --share=$HOME/.cargo -f guix.scm
+;;   guix shell --share=$HOME/.cargo -L . -C -D -F pafcheck-shell-git # preferred development container
 ;;
 ;; and inside the container
 ;;
+;;   rm -rf target/  # may be necessary
 ;;   CC=gcc cargo build --release
 ;;
-;; list packages
+;; list other packages in this guix.scm file
 ;;
 ;;   guix package -L . -A pafcheck
 ;;
@@ -31,11 +31,10 @@
 ;; If things do not work you may also have to update the guix-daemon in systemd. Guix mostly downloads binary
 ;; substitutes. If it wants to build a lot of software you probably have substitutes misconfigured.
 
-;; by Pjotr Prins & Andrea Guarracino (c) 2023-2024
+;; by Pjotr Prins (c) 2025
 
-(define-module (guix)
+(define-module (guix-pafcheck)
   #:use-module ((guix licenses) #:prefix license:)
-  ;; #:use-module (guix build-system cmake)
   #:use-module (guix build-system cargo)
   #:use-module (guix download)
   #:use-module (guix gexp)
@@ -105,7 +104,7 @@
     (name "pafcheck-shell-git")
     ;; (version (git-version "0.21" "HEAD" %git-commit))
     (inputs
-     (modify-inputs (package-inputs wfmash-base-git)
+     (modify-inputs (package-inputs pafcheck-base-git)
          (append binutils coreutils-minimal ;; for the shell
                  )))
     (propagated-inputs (list cmake rust rust-cargo nss-certs openssl perl gnu-make-4.2
@@ -131,4 +130,4 @@
      ))
     ))
 
-pafcheck-base-git ;; default optimized static deployment build
+pafcheck-base-git ;; default deployment build with debug info
