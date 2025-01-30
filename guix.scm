@@ -82,14 +82,38 @@
     (version (git-version "0.1.0" "HEAD" %git-commit))
     (source (local-file %source-dir #:recursive? #t))
     (build-system cargo-build-system)
-    (inputs (list binutils coreutils-minimal ;; for the shell
-                  curl gnutls lzip openssl pkg-config zlib xz)) ;; mostly for htslib
+    (inputs (list curl gnutls lzip openssl pkg-config zlib xz)) ;; mostly for htslib
+    (arguments
+     `(#:cargo-inputs (("rust-anyhow" ,rust-anyhow-1)
+                       ("rust-clap" ,rust-clap-4)
+                       ("rust-rust-htslib" ,rust-rust-htslib-0.38)
+                       ("rust-tempfile" ,rust-tempfile-3)
+                       ("rust-thiserror" ,rust-thiserror-1))
+       ;; #:cargo-development-inputs ()))
+       #:cargo-package-flags '("--no-metadata" "--no-verify" "--allow-dirty")
+     ))
+    (synopsis "pafcheck")
+    (description
+     "Tool for validating PAF (Pairwise Alignment Format) files against their corresponding FASTA sequences. It ensures that the alignments described in the PAF file match the actual sequences in the FASTA files.")
+    (home-page "https://github.com/ekg/pafcheck")
+    (license license:expat)))
 
+(define-public pafcheck-shell-git
+  "Shell version to use 'cargo build'"
+  (package
+    (inherit pafcheck-base-git)
+    (name "pafcheck-shell-git")
+    ;; (version (git-version "0.21" "HEAD" %git-commit))
+    (inputs
+     (modify-inputs (package-inputs wfmash-base-git)
+         (append binutils coreutils-minimal ;; for the shell
+                 )))
     (propagated-inputs (list cmake rust rust-cargo nss-certs openssl perl gnu-make-4.2
                              coreutils-minimal which perl binutils gcc-toolchain pkg-config zlib
                              )) ;; to run cargo build in the shell
     (arguments
-     `(#:cargo-inputs (("rust-anyhow" ,rust-anyhow-1)
+     `(
+       #:cargo-inputs (("rust-anyhow" ,rust-anyhow-1)
                        ("rust-clap" ,rust-clap-4)
                        ("rust-rust-htslib" ,rust-rust-htslib-0.38)
                        ("rust-tempfile" ,rust-tempfile-3)
@@ -105,10 +129,6 @@
                                (delete 'install)
                                )
      ))
-    (synopsis "pafcheck")
-    (description
-     "Tool for validating PAF (Pairwise Alignment Format) files against their corresponding FASTA sequences. It ensures that the alignments described in the PAF file match the actual sequences in the FASTA files.")
-    (home-page "https://github.com/ekg/pafcheck")
-    (license license:expat)))
+    ))
 
 pafcheck-base-git ;; default optimized static deployment build
