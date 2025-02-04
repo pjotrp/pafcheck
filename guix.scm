@@ -33,8 +33,9 @@
 
 ;; by Pjotr Prins (c) 2025
 
-(define-module (guix-pafcheck)
+(define-module (guix)
   #:use-module ((guix licenses) #:prefix license:)
+  ;; #:use-module (guix build-system cmake)
   #:use-module (guix build-system cargo)
   #:use-module (guix download)
   #:use-module (guix gexp)
