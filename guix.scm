@@ -4,14 +4,16 @@
 ;;
 ;; To get a development container using a recent guix (see `guix pull`)
 ;;
-;;   guix shell --share=$HOME/.cargo -L . -C -D -F pafcheck-shell-git # preferred development container
+;;   guix shell --share=$HOME/.cargo -C -L . pafcheck-shell-git
 ;;
 ;; and inside the container
 ;;
-;;   rm -rf target/  # may be necessary
+;;   rm -rf target/  # may be necessary when check-for-pregenerated-files fails
 ;;   CC=gcc cargo build --release
 ;;
-;; list other packages in this guix.scm file
+;; note that we don't expect cargo to download packages.
+;;
+;; List other packages in this guix.scm file
 ;;
 ;;   guix package -L . -A pafcheck
 ;;
@@ -24,9 +26,7 @@
 ;;
 ;;   ~/opt/guix/bin/guix build -f guix.scm
 ;;
-;; Or get a shell
-;;
-;;   ~/opt/guix/gin/guix build -f guix.scm
+;; Or get a shell (see above)
 ;;
 ;; If things do not work you may also have to update the guix-daemon in systemd. Guix mostly downloads binary
 ;; substitutes. If it wants to build a lot of software you probably have substitutes misconfigured.
@@ -117,18 +117,16 @@
                        ("rust-clap" ,rust-clap-4)
                        ("rust-rust-htslib" ,rust-rust-htslib-0.38)
                        ("rust-tempfile" ,rust-tempfile-3)
-                       ("rust-thiserror" ,rust-thiserror-1)
-                       )
-       ;; #:cargo-development-inputs ()))
+                       ("rust-thiserror" ,rust-thiserror-1))
+       #:cargo-development-inputs ()
        #:cargo-package-flags '("--no-metadata" "--no-verify" "--allow-dirty")
        #:phases (modify-phases %standard-phases
+                               (delete 'check-for-pregenerated-files)
                                (delete 'configure)
                                (delete 'build)
                                (delete 'package)
                                (delete 'check)
                                (delete 'install)
-                               )
-     ))
-    ))
+                               )))))
 
 pafcheck-base-git ;; default deployment build with debug info
