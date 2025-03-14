@@ -73,13 +73,13 @@
 
 (define %source-dir (dirname (current-filename)))
 
-(define %git-commit
-    (read-string (open-pipe "git show HEAD | head -1 | cut -d ' ' -f 2" OPEN_READ)))
+(define %version
+  (read-string (open-pipe "git describe --always --tags --long|tr -d $'\n'" OPEN_READ)))
 
 (define-public pafcheck-base-git
   (package
     (name "pafcheck-base-git")
-    (version (git-version "0.1.0" "HEAD" %git-commit))
+    (version %version)
     (source (local-file %source-dir #:recursive? #t))
     (build-system cargo-build-system)
     (inputs (list curl gnutls lzip openssl pkg-config zlib xz)) ;; mostly for htslib
@@ -103,7 +103,6 @@
   (package
     (inherit pafcheck-base-git)
     (name "pafcheck-shell-git")
-    ;; (version (git-version "0.21" "HEAD" %git-commit))
     (inputs
      (modify-inputs (package-inputs pafcheck-base-git)
          (append binutils coreutils-minimal ;; for the shell
